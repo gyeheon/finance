@@ -47,9 +47,9 @@ async def test_(ctx, *, execpt='None'):
 async def lunch_(ctx, current_day = time.strftime('%Y%m%d', time.localtime(time.time()))):
     async with Neispy() as neis:
         scinfo = await neis.schoolInfo(SCHUL_NM="서울금융고등학교")
-        AE = scinfo[0].ATPT_OFCDC_SC_CODE  # 교육청 코드
-        SE = scinfo[0].SD_SCHUL_CODE  # 학교 코드    
-        scmeal = await neis.mealServiceDietInfo(AE, SE, MLSV_YMD=str(current_day))
+        ae = scinfo[0].ATPT_OFCDC_SC_CODE  # 교육청 코드
+        se = scinfo[0].SD_SCHUL_CODE  # 학교 코드
+        scmeal = await neis.mealServiceDietInfo(ae, se, MLSV_YMD=str(current_day))
         meal = scmeal[0].DDISH_NM.replace("<br/>", "\n")
     await ctx.reply("```\n{}\n```".format(meal))
 
@@ -57,11 +57,17 @@ async def lunch_(ctx, current_day = time.strftime('%Y%m%d', time.localtime(time.
 async def schedule_(ctx, current_day = time.strftime('%Y%m%d', time.localtime(time.time()))):
     async with Neispy() as neis:
         scinfo = await neis.schoolInfo(SCHUL_NM="서울금융고등학교")
-        AE = scinfo[0].ATPT_OFCDC_SC_CODE  # 교육청 코드
-        SE = scinfo[0].SD_SCHUL_CODE  # 학교 코드
-        scschedule = await neis.SchoolSchedule(AE, SE, AA_YMD=str(current_day))
+        ae = scinfo[0].ATPT_OFCDC_SC_CODE  # 교육청 코드
+        se = scinfo[0].SD_SCHUL_CODE  # 학교 코드
+        scschedule = await neis.SchoolSchedule(ae, se, AA_YMD=str(current_day))
         schedule = scschedule[0].EVENT_NM
     await ctx.reply("```\n{}\n```".format(schedule))
+
+@bot.event
+async def on_member_join(member):
+    channel = bot.get_channel(1036294870354116658)
+    await member.edit(nick = '외부인님 채팅 확인해 주세요')
+    await channel.send("{}님 안녕하세요! 이 채널에 `이름, 학년(나이)` 적어주세요.".format(member.mention))
 
 
 @bot.command(aliases=['도움말'])
